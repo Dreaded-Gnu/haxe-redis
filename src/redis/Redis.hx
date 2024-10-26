@@ -218,6 +218,15 @@ class Redis {
   }
 
   /**
+   * FLUSHDB
+   * @param async
+   * @return Bool
+   */
+  public function flushdb(async:Bool = false):Bool {
+    return this.validateOk(this.command('FLUSHDB', [async ? 'ASYNC' : 'SYNC',]));
+  }
+
+  /**
    * SET
    * @param key key to set
    * @param value value to set
@@ -269,7 +278,7 @@ class Redis {
    */
   public function hset(key:String, field:String, value:String, ...arguments:String):Int {
     // handle invalid argument length
-    if (arguments.length % 2 != 0) {
+    if (arguments.length > 0 && arguments.length % 2 != 0) {
       throw new Error('-ERR Invalid amount of arguments passed!');
     }
     // setup param array
