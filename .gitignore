@@ -1,2 +1,4 @@
 .haxelib
 .unittest
+bin
+docs

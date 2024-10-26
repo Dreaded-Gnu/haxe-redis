@@ -1,0 +1,9 @@
+-cp src
+-D doc-gen
+--macro include('redis')
+--no-output
+--xml bin/types.xml
+--cpp bin/cpp
+--next
+
+-cmd haxelib run dox -o ./docs -i bin -in redis --title "API Reference" -D website "https://github.com/Dreaded-Gnu/haxe-redis" -D source-path "https://github.com/Dreaded-Gnu/haxe-redis/tree/main/src/" -D textColor 0x777777 --toplevel-package redis
