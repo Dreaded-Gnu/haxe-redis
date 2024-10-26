@@ -2,6 +2,9 @@ package redis;
 
 import sys.net.Host;
 import sys.net.Socket;
+#if (target.threaded)
+import sys.thread.Mutex;
+#end
 
 /**
  * Main redis class for connecting and accessing redis
@@ -38,6 +41,9 @@ class Redis {
   public var database(default, null):Int;
 
   private var sock:Socket;
+  #if (target.threaded)
+  private var socketMutex:Mutex;
+  #end
 
   /**
    * @param host redis instance host
@@ -50,6 +56,9 @@ class Redis {
     this.port = port;
     this.password = password;
     this.database = database;
+    #if (target.threaded)
+    this.socketMutex = new Mutex();
+    #end
   }
 
   /**
@@ -178,10 +187,20 @@ class Redis {
    * @return Dynamic
    */
   private function command(cmd:String, ?args:Array<String>):Dynamic {
+    // acquire mutex
+    #if (target.threaded)
+    this.socketMutex.acquire();
+    #end
     // send command
     this.send(cmd, args);
     // receive response
-    return this.receive();
+    var response:Dynamic = this.receive();
+    // release mutex
+    #if (target.threaded)
+    this.socketMutex.release();
+    #end
+    // return response
+    return response;
   }
 
   /**
@@ -198,6 +217,9 @@ class Redis {
     this.sock = new Socket();
     this.sock.setTimeout(TIMEOUT);
     this.sock.connect(new Host(this.host), this.port);
+    // set to non blocking and enable fast send
+    this.sock.setBlocking(false);
+    this.sock.setFastSend(true);
     // not empty password requires authentication
     if (this.password != '') {
       // validate auth command

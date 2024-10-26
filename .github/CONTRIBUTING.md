@@ -25,6 +25,7 @@ To setup for making changes you'll need to take a few steps, we've outlined belo
 3. Run `haxelib newrepo`
 4. Run `haxelib install formatter`
 5. Run `haxelib install utest`
+6. Run `haxelib install dox`
 
 ### Making a change
 
