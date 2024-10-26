@@ -1,15 +1,9 @@
 package test;
 
-import haxe.Timer;
-import utest.Runner;
-import utest.ui.Report;
 import utest.Assert;
-import haxe.io.Bytes;
-import haxe.io.BytesBuffer;
-import haxe.crypto.BaseCode;
 import redis.Redis;
 
-class RedisTest extends utest.Test {
+class RedisTestHashmap extends utest.Test {
   private var redis:Redis;
 
   /**
@@ -26,61 +20,6 @@ class RedisTest extends utest.Test {
    */
   public function teardown():Void {
     this.redis.disconnect();
-  }
-
-  /**
-   * Test ping
-   */
-  public function testPing():Void {
-    Assert.isTrue(this.redis.ping());
-  }
-
-  /**
-   * Test set
-   */
-  public function testSet():Void {
-    Assert.isTrue(this.redis.set("foo", "bar"));
-  }
-
-  /**
-   * Test get with previous set
-   */
-  public function testGet():Void {
-    Assert.isTrue(this.redis.set("foo", "bar"));
-    Assert.equals("bar", this.redis.get("foo"));
-  }
-
-  /**
-   * Test get where nothing was set before
-   */
-  public function testGetNotSet():Void {
-    Assert.equals(null, this.redis.get("foo"));
-  }
-
-  /**
-   * Test set with expire
-   */
-  @:timeout(5000)
-  public function testSetExpire(async:utest.Async):Void {
-    // set with expire of one second
-    Assert.isTrue(this.redis.set("foo", "bar", 1));
-    // assert equals
-    Assert.equals("bar", this.redis.get("foo"));
-    // delay one second
-    Timer.delay(() -> {
-      // now return should be null
-      Assert.equals(null, this.redis.get("foo"));
-      // mark async as done
-      async.done();
-    }, 2000);
-  }
-
-  /**
-   * Test strlen
-   */
-  public function testStrlen():Void {
-    Assert.isTrue(this.redis.set("foo", "bar"));
-    Assert.equals(3, this.redis.strlen("foo"));
   }
 
   /**
