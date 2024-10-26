@@ -28,9 +28,8 @@ class Sample {
 
 Currently supported commands
 
+* DEL
 * GET
-* SET / SETEX
-* STRLEN
 * HDEL
 * HEXISTS
 * HGET
@@ -38,6 +37,9 @@ Currently supported commands
 * HKEYS
 * HLEN
 * HSET
+* PING
+* SET / SETEX
+* STRLEN
 
 ## installation
 

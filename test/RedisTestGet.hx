@@ -4,7 +4,7 @@ import haxe.Timer;
 import utest.Assert;
 import redis.Redis;
 
-class RedisTestGetSet extends utest.Test {
+class RedisTestGet extends utest.Test {
   private var redis:Redis;
 
   /**
@@ -24,13 +24,6 @@ class RedisTestGetSet extends utest.Test {
   }
 
   /**
-   * Test set
-   */
-  public function testSet():Void {
-    Assert.isTrue(this.redis.set("foo", "bar"));
-  }
-
-  /**
    * Test get with previous set
    */
   public function testGet():Void {
@@ -43,23 +36,5 @@ class RedisTestGetSet extends utest.Test {
    */
   public function testGetNotSet():Void {
     Assert.equals(null, this.redis.get("foo"));
-  }
-
-  /**
-   * Test set with expire
-   */
-  @:timeout(5000)
-  public function testSetExpire(async:utest.Async):Void {
-    // set with expire of one second
-    Assert.isTrue(this.redis.set("foo", "bar", 1));
-    // assert equals
-    Assert.equals("bar", this.redis.get("foo"));
-    // delay one second
-    Timer.delay(() -> {
-      // now return should be null
-      Assert.equals(null, this.redis.get("foo"));
-      // mark async as done
-      async.done();
-    }, 2000);
   }
 }

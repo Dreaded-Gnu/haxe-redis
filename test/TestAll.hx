@@ -6,9 +6,11 @@ class TestAll {
    */
   public static function main() {
     utest.UTest.run([
-      new RedisTestGetSet(),
+      new RedisTestDel(),
+      new RedisTestGet(),
       new RedisTestHashmap(),
       new RedisTestPing(),
+      new RedisTestSet(),
       new RedisTestStrlen()
     ]);
   }

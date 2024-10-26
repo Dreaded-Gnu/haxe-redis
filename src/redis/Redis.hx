@@ -246,21 +246,22 @@ class Redis {
   }
 
   /**
-   * PING
-   * @return True when result of ping equals pong, else false is returned
+   * DEL
+   * @param key Key to delete
+   * @param ...keys Further keys to delete
+   * @return Amount of deleted keys
    */
-  public function ping():Bool {
-    return cast(this.command('PING'), String) == Redis.PONG;
-  }
-
-  /**
-   * SELECT
-   * @param index Database to select
-   * @return True on successful select of database
-   * @throws Error When response of select was invalid
-   */
-  public function select(index:Int):Bool {
-    return this.validateOk(this.command('SELECT', [Std.string(index),]));
+  public function del(key:String, ...keys:String):Int {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push fixed parameters
+    param.push(key);
+    // push variable parameter
+    for (arg in keys) {
+      param.push(arg);
+    }
+    // execute command and return result
+    return cast(this.command('DEL', param), Int);
   }
 
   /**
@@ -274,36 +275,12 @@ class Redis {
   }
 
   /**
-   * SET / SETEX
-   * @param key Key to set
-   * @param value Value to set
-   * @param expire Optional expire in seconds
-   * @return True on successful set of key
-   * @throws Error When response from set/setex was invalid
-   */
-  public function set(key:String, value:String, ?expire:Int):Bool {
-    if (null == expire) {
-      return this.validateOk(this.command('SET', [key, value,]));
-    }
-    return this.validateOk(this.command('SETEX', [key, Std.string(expire), value,]));
-  }
-
-  /**
    * GET
    * @param key Key to get
    * @return String value of key or null if not set
    */
   public function get(key:String):String {
     return cast(this.command('GET', [key,]), String);
-  }
-
-  /**
-   * STRLEN
-   * @param key Key to get string length
-   * @return String length of key
-   */
-  public function strlen(key:String):Int {
-    return cast(this.command('STRLEN', [key,]), Int);
   }
 
   /**
@@ -400,5 +377,47 @@ class Redis {
     }
     // return command result casted to int
     return cast(this.command('HSET', param), Int);
+  }
+
+  /**
+   * PING
+   * @return True when result of ping equals pong, else false is returned
+   */
+  public function ping():Bool {
+    return cast(this.command('PING'), String) == Redis.PONG;
+  }
+
+  /**
+   * SELECT
+   * @param index Database to select
+   * @return True on successful select of database
+   * @throws Error When response of select was invalid
+   */
+  public function select(index:Int):Bool {
+    return this.validateOk(this.command('SELECT', [Std.string(index),]));
+  }
+
+  /**
+   * SET / SETEX
+   * @param key Key to set
+   * @param value Value to set
+   * @param expire Optional expire in seconds
+   * @return True on successful set of key
+   * @throws Error When response from set/setex was invalid
+   */
+  public function set(key:String, value:String, ?expire:Int):Bool {
+    if (null == expire) {
+      return this.validateOk(this.command('SET', [key, value,]));
+    }
+    return this.validateOk(this.command('SETEX', [key, Std.string(expire), value,]));
+  }
+
+  /**
+   * STRLEN
+   * @param key Key to get string length
+   * @return String length of key
+   */
+  public function strlen(key:String):Int {
+    return cast(this.command('STRLEN', [key,]), Int);
   }
 }
