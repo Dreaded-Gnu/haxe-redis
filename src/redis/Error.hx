@@ -5,11 +5,9 @@ import haxe.Exception;
 class Error extends Exception {
   /**
    * Constructor
-   * @param message
-   * @param previous
-   * @param native
+   * @param message exception message
    */
-  public function new(message:String, ?previous:Exception, ?native:Any):Void {
-    super(message.substr(5), previous, native);
+  public function new(message:String):Void {
+    super(message.substr(5), null, null);
   }
 }

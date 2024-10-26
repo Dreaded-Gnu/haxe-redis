@@ -9,20 +9,39 @@ class Redis {
   private static inline var OK:String = 'OK';
   private static inline var PONG:String = 'PONG';
 
-  public var timeout(null, default):String;
+  /**
+   * Connection timeout
+   */
+  public var timeout(null, default):Int;
+
+  /**
+   * Redis host
+   */
   public var host(default, null):String;
+
+  /**
+   * Redis port
+   */
   public var port(default, null):Int;
+
+  /**
+   * Redis password
+   */
   public var password(default, null):String;
+
+  /**
+   * Redis database
+   */
   public var database(default, null):Int;
 
   private var sock:Socket;
 
   /**
    * Constructor
-   * @param host
-   * @param port
-   * @param password
-   * @param database
+   * @param host redis instance host
+   * @param port redis instance port
+   * @param password redis password
+   * @param database database to connect to
    */
   public function new(host:String, port:Int, password:String, database:Int) {
     this.host = host;
@@ -185,7 +204,7 @@ class Redis {
   }
 
   /**
-   * Disconnect socket
+   * Disconnect from redis
    */
   public function disconnect():Void {
     // handle no socket open
@@ -202,7 +221,7 @@ class Redis {
 
   /**
    * PING
-   * @return Bool
+   * @return True when result of ping equals pong, else false is returned
    */
   public function ping():Bool {
     return cast(this.command('PING'), String) == Redis.PONG;
@@ -210,8 +229,9 @@ class Redis {
 
   /**
    * SELECT
-   * @param index
-   * @return Bool
+   * @param index database to select
+   * @return true on successful select of database
+   * @throws Error When response of select was invalid
    */
   public function select(index:Int):Bool {
     return this.validateOk(this.command('SELECT', [Std.string(index),]));
@@ -219,19 +239,21 @@ class Redis {
 
   /**
    * FLUSHDB
-   * @param async
-   * @return Bool
+   * @param async perform flushdb async, defaults to false
+   * @return true on successful flush of database
+   * @throws Error when response from flushdb was invalid
    */
   public function flushdb(async:Bool = false):Bool {
     return this.validateOk(this.command('FLUSHDB', [async ? 'ASYNC' : 'SYNC',]));
   }
 
   /**
-   * SET
+   * SET / SETEX
    * @param key key to set
    * @param value value to set
    * @param expire optional expire
-   * @return Bool
+   * @return true on successful set of key
+   * @throws Error When response from set/setex was invalid
    */
   public function set(key:String, value:String, ?expire:Int):Bool {
     if (null == expire) {
@@ -243,7 +265,7 @@ class Redis {
   /**
    * GET
    * @param key key to get
-   * @return String
+   * @return String value of key or null if not set
    */
   public function get(key:String):String {
     return cast(this.command('GET', [key,]), String);
@@ -252,7 +274,7 @@ class Redis {
   /**
    * STRLEN
    * @param key key to get string length
-   * @return Int
+   * @return String length of key
    */
   public function strlen(key:String):Int {
     return cast(this.command('STRLEN', [key,]), Int);
@@ -262,7 +284,7 @@ class Redis {
    * HGET
    * @param key hashmap key
    * @param field field to get value of
-   * @return String
+   * @return String value of field in hashmap or null if not existing
    */
   public function hget(key:String, field:String):String {
     return cast(this.command('HGET', [key, field,]), String);
@@ -274,7 +296,7 @@ class Redis {
    * @param field field to set value
    * @param value value to set
    * @param ...arguments further key value pairs
-   * @return Int
+   * @return Amount of set fields in hashmap
    */
   public function hset(key:String, field:String, value:String, ...arguments:String):Int {
     // handle invalid argument length
@@ -300,7 +322,7 @@ class Redis {
    * @param key hashmap key
    * @param field field to delete
    * @param ...arguments further fields to delete
-   * @return Int
+   * @return Amount of deleted fields in hashset
    */
   public function hdel(key:String, field:String, ...arguments:String):Int {
     // setup param array
