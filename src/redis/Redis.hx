@@ -24,7 +24,7 @@ class Redis {
    * @param password
    * @param database
    */
-  public function new(host:String, port:Int = 6379, password:String, database:Int) {
+  public function new(host:String, port:Int, password:String, database:Int) {
     this.host = host;
     this.port = port;
     this.password = password;
