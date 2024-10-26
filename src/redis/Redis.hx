@@ -156,7 +156,7 @@ class Redis {
    * @param args
    * @return Dynamic
    */
-   private function command(cmd:String, ?args:Array<String>):Dynamic {
+  private function command(cmd:String, ?args:Array<String>):Dynamic {
     // send command
     this.send(cmd, args);
     // receive response
@@ -293,5 +293,26 @@ class Redis {
     }
     // return command result casted to int
     return cast(this.command('HSET', param), Int);
+  }
+
+  /**
+   * HDEL
+   * @param key hashmap key
+   * @param field field to delete
+   * @param ...arguments further fields to delete
+   * @return Int
+   */
+  public function hdel(key:String, field:String, ...arguments:String):Int {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push fixed parameters
+    param.push(key);
+    param.push(field);
+    // push variable parameter
+    for (arg in arguments) {
+      param.push(arg);
+    }
+    // return command result
+    return cast(this.command('HDEL', param), Int);
   }
 }

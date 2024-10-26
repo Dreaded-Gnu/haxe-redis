@@ -103,4 +103,19 @@ class RedisTest extends utest.Test {
     Assert.equals(null, this.redis.hget("nonexistant", "asdf"));
     Assert.equals(null, this.redis.hget("myhash", "asdf"));
   }
+
+  /**
+   * Test hdel
+   */
+  public function testHdel():Void {
+    Assert.equals(1, this.redis.hset("myhash", "field1", "Hello"));
+    Assert.equals(2, this.redis.hset("myhash", "field2", "Hi", "field3", "World"));
+    Assert.equals(1, this.redis.hdel("myhash", "field1"));
+    Assert.equals(null, this.redis.hget("myhash", "field1"));
+    Assert.equals(0, this.redis.hdel("myhash", "field1"));
+    Assert.equals(2, this.redis.hdel("myhash", "field2", "field3"));
+    Assert.equals(null, this.redis.hget("myhash", "field2"));
+    Assert.equals(null, this.redis.hget("myhash", "field3"));
+    Assert.equals(0, this.redis.hdel("myhash", "field2", "field3"));
+  }
 }
