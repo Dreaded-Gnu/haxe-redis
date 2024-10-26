@@ -39,6 +39,7 @@ Currently supported commands
 * HSET
 * PING
 * SET / SETEX
+* SELECT
 * STRLEN
 
 ## installation
