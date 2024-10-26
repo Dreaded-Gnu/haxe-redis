@@ -13,6 +13,5 @@
   ],
   "classPath": "src",
   "dependencies": {
-    "format": "3.7.0"
   }
 }

@@ -4,7 +4,7 @@ import utest.Assert;
 import haxe.io.Bytes;
 import haxe.io.BytesBuffer;
 import haxe.crypto.BaseCode;
-import redis.Connection;
+import redis.Redis;
 
 class Test {
   public static function main() {

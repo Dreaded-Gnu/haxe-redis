@@ -1,14 +1,21 @@
 version: '3.1'
 services:
-  # amqp container
-  amqp:
+  redis:
     image: redis:latest
     restart: always
     ports:
       - 6379:6379
-    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81 --bind 0.0.0.0
     volumes:
       - cache:/data
+  # redis commander
+  commander:
+    image: rediscommander/redis-commander:latest
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      - REDIS_HOSTS=local:gamedev_redis:6379:1:eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
 volumes:
   cache:
     driver: local
