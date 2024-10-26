@@ -2,6 +2,9 @@ package redis;
 
 import haxe.Exception;
 
+/**
+ * Error exception
+ */
 class Error extends Exception {
   /**
    * Constructor

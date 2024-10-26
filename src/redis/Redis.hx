@@ -3,6 +3,9 @@ package redis;
 import sys.net.Host;
 import sys.net.Socket;
 
+/**
+ * Main redis class for connecting and accessing redis
+ */
 class Redis {
   private static inline var TIMEOUT:Int = 5;
   private static inline var EOL:String = '\r\n';
@@ -37,7 +40,6 @@ class Redis {
   private var sock:Socket;
 
   /**
-   * Constructor
    * @param host redis instance host
    * @param port redis instance port
    * @param password redis password
@@ -229,8 +231,8 @@ class Redis {
 
   /**
    * SELECT
-   * @param index database to select
-   * @return true on successful select of database
+   * @param index Database to select
+   * @return True on successful select of database
    * @throws Error When response of select was invalid
    */
   public function select(index:Int):Bool {
@@ -239,9 +241,9 @@ class Redis {
 
   /**
    * FLUSHDB
-   * @param async perform flushdb async, defaults to false
-   * @return true on successful flush of database
-   * @throws Error when response from flushdb was invalid
+   * @param async Perform flushdb async, defaults to false
+   * @return True on successful flush of database
+   * @throws Error When response from flushdb was invalid
    */
   public function flushdb(async:Bool = false):Bool {
     return this.validateOk(this.command('FLUSHDB', [async ? 'ASYNC' : 'SYNC',]));
@@ -249,10 +251,10 @@ class Redis {
 
   /**
    * SET / SETEX
-   * @param key key to set
-   * @param value value to set
-   * @param expire optional expire
-   * @return true on successful set of key
+   * @param key Key to set
+   * @param value Value to set
+   * @param expire Optional expire in seconds
+   * @return True on successful set of key
    * @throws Error When response from set/setex was invalid
    */
   public function set(key:String, value:String, ?expire:Int):Bool {
@@ -264,7 +266,7 @@ class Redis {
 
   /**
    * GET
-   * @param key key to get
+   * @param key Key to get
    * @return String value of key or null if not set
    */
   public function get(key:String):String {
@@ -273,7 +275,7 @@ class Redis {
 
   /**
    * STRLEN
-   * @param key key to get string length
+   * @param key Key to get string length
    * @return String length of key
    */
   public function strlen(key:String):Int {
@@ -282,8 +284,8 @@ class Redis {
 
   /**
    * HGET
-   * @param key hashmap key
-   * @param field field to get value of
+   * @param key Hashmap key
+   * @param field Field to get value of
    * @return String value of field in hashmap or null if not existing
    */
   public function hget(key:String, field:String):String {
@@ -292,11 +294,12 @@ class Redis {
 
   /**
    * HSET
-   * @param key hashmap key
-   * @param field field to set value
-   * @param value value to set
-   * @param ...arguments further key value pairs
+   * @param key Hashmap key
+   * @param field Field to set value
+   * @param value Value to set
+   * @param ...arguments Further key value pairs
    * @return Amount of set fields in hashmap
+   * @throws Error When further arguments is not dividable by 2
    */
   public function hset(key:String, field:String, value:String, ...arguments:String):Int {
     // handle invalid argument length
@@ -319,9 +322,9 @@ class Redis {
 
   /**
    * HDEL
-   * @param key hashmap key
-   * @param field field to delete
-   * @param ...arguments further fields to delete
+   * @param key Hashmap key
+   * @param field Field to delete
+   * @param ...arguments Further fields to delete
    * @return Amount of deleted fields in hashset
    */
   public function hdel(key:String, field:String, ...arguments:String):Int {
