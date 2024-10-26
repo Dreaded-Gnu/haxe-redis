@@ -307,6 +307,37 @@ class Redis {
   }
 
   /**
+   * HDEL
+   * @param key Hashmap key
+   * @param field Field to delete
+   * @param ...arguments Further fields to delete
+   * @return Amount of deleted fields in hashset
+   */
+  public function hdel(key:String, field:String, ...arguments:String):Int {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push fixed parameters
+    param.push(key);
+    param.push(field);
+    // push variable parameter
+    for (arg in arguments) {
+      param.push(arg);
+    }
+    // return command result
+    return cast(this.command('HDEL', param), Int);
+  }
+
+  /**
+   * HEXISTS
+   * @param key Hashmap key
+   * @param field Field to check for existance
+   * @return Returns one if field exists, else 0
+   */
+  public function hexists(key:String, field:String):Int {
+    return cast(this.command('HEXISTS', [key, field,]), Int);
+  }
+
+  /**
    * HGET
    * @param key Hashmap key
    * @param field Field to get value of
@@ -314,6 +345,33 @@ class Redis {
    */
   public function hget(key:String, field:String):String {
     return cast(this.command('HGET', [key, field,]), String);
+  }
+
+  /**
+   * HGETALL
+   * @param key Hashmap key
+   * @return Array of field entry pairs
+   */
+  public function hgetall(key:String):Array<Dynamic> {
+    return cast(this.command('HGETALL', [key,]), Array<Dynamic>);
+  }
+
+  /**
+   * HKEYS
+   * @param key Hashmap keys
+   * @return Array of fields
+   */
+  public function hkeys(key:String):Array<Dynamic> {
+    return cast(this.command('HKEYS', [key,]), Array<Dynamic>);
+  }
+
+  /**
+   * HLEN
+   * @param key Hashmap keys
+   * @return Hashmap length
+   */
+  public function hlen(key:String):Int {
+    return cast(this.command('HLEN', [key,]), Int);
   }
 
   /**
@@ -342,26 +400,5 @@ class Redis {
     }
     // return command result casted to int
     return cast(this.command('HSET', param), Int);
-  }
-
-  /**
-   * HDEL
-   * @param key Hashmap key
-   * @param field Field to delete
-   * @param ...arguments Further fields to delete
-   * @return Amount of deleted fields in hashset
-   */
-  public function hdel(key:String, field:String, ...arguments:String):Int {
-    // setup param array
-    var param:Array<String> = new Array<String>();
-    // push fixed parameters
-    param.push(key);
-    param.push(field);
-    // push variable parameter
-    for (arg in arguments) {
-      param.push(arg);
-    }
-    // return command result
-    return cast(this.command('HDEL', param), Int);
   }
 }

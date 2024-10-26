@@ -31,9 +31,13 @@ Currently supported commands
 * GET
 * SET / SETEX
 * STRLEN
-* HGET
-* HSET
 * HDEL
+* HEXISTS
+* HGET
+* HGETALL
+* HKEYS
+* HLEN
+* HSET
 
 ## installation
 
