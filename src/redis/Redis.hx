@@ -186,6 +186,8 @@ class Redis {
 
   /**
    * Connect to redis
+   * @throws Error When authentication failed
+   * @throws Error When database selection failed
    */
   public function connect():Void {
     // handle already connected
