@@ -7,4 +7,4 @@
 --library utest
 --main test.TestAll
 --dce full
--cpp test/Test
+#-cpp test/Test

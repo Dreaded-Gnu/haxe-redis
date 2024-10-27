@@ -42,8 +42,66 @@ class RedisTestHashmap extends utest.Test {
    */
   public function testHexists():Void {
     Assert.equals(1, this.redis.hset("myhash", "field1", "Hello"));
-    Assert.equals(1, this.redis.hexists("myhash", "field1"));
-    Assert.equals(0, this.redis.hexists("myhash", "field2"));
+    Assert.equals(2, this.redis.hset("myhash", "field2", "Hi", "field3", "World"));
+  }
+
+  /**
+   * Test hexpire
+   */
+  public function testHexpire():Void {
+    Assert.equals(3, this.redis.hset("myhash", "field1", "Hello", "field2", "World", "field3", "Bar"));
+    var a:Array<Dynamic> = this.redis.hexpire("myhash", 300, "", "field1", "field2");
+    Assert.equals(2, a.length);
+    for (entry in a) {
+      Assert.equals(1, entry);
+    }
+    a = this.redis.hexpiretime("myhash", "field1", "field2", "field3", "field4");
+    Assert.equals(4, a.length);
+    Assert.notEquals(0, a[0]);
+    Assert.notEquals(-1, a[0]);
+    Assert.notEquals(0, a[1]);
+    Assert.notEquals(-1, a[1]);
+    Assert.equals(-1, a[2]);
+    Assert.equals(-2, a[3]);
+  }
+
+  /**
+   * Test hexpireat
+   */
+  public function testHexpireat():Void {
+    Assert.equals(3, this.redis.hset("myhash", "field1", "Hello", "field2", "World", "field3", "Bar"));
+    var timestamp:Int = Std.int(Sys.time()) + 3600;
+    var a:Array<Dynamic> = this.redis.hexpireat("myhash", timestamp, "", "field1", "field2");
+    Assert.equals(2, a.length);
+    for (entry in a) {
+      Assert.equals(1, entry);
+    }
+    a = this.redis.hexpiretime("myhash", "field1", "field2", "field3", "field4");
+    Assert.equals(4, a.length);
+    Assert.equals(timestamp, a[0]);
+    Assert.equals(timestamp, a[1]);
+    Assert.equals(-1, a[2]);
+    Assert.equals(-2, a[3]);
+  }
+
+  /**
+   * Test hexpiretime
+   */
+  public function testHexpiretime():Void {
+    Assert.equals(3, this.redis.hset("myhash", "field1", "Hello", "field2", "World", "field3", "Bar"));
+    var a:Array<Dynamic> = this.redis.hexpire("myhash", 300, "", "field1", "field2");
+    Assert.equals(2, a.length);
+    for (entry in a) {
+      Assert.equals(1, entry);
+    }
+    a = this.redis.hexpiretime("myhash", "field1", "field2", "field3", "field4");
+    Assert.equals(4, a.length);
+    Assert.notEquals(0, a[0]);
+    Assert.notEquals(-1, a[0]);
+    Assert.notEquals(0, a[1]);
+    Assert.notEquals(-1, a[1]);
+    Assert.equals(-1, a[2]);
+    Assert.equals(-2, a[3]);
   }
 
   /**

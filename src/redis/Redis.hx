@@ -330,6 +330,84 @@ class Redis {
   }
 
   /**
+   * HEXPIRE
+   * @param key Hashmap key
+   * @param expire Expire in seconds
+   * @param option Expire options: NX, XX, GT, LT
+   * @param field Field to set expire
+   * @param ...arguments Further fields to set expire
+   * @return Array<Dynamic>
+   */
+  public function hexpire(key:String, expire:Int, option:String, field:String, ...arguments:String):Array<Dynamic> {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    param.push(Std.string(expire));
+    if (option == 'NX' || option == 'XX' || option == 'GT' || option == 'LT') {
+      param.push(option);
+    }
+    param.push('FIELDS');
+    param.push(Std.string(1 + arguments.length));
+    param.push(field);
+    for (arg in arguments) {
+      param.push(arg);
+    }
+    // return command result
+    return cast(this.command('HEXPIRE', param), Array<Dynamic>);
+  }
+
+  /**
+   * HEXPIREAT
+   * @param key Hashmap key
+   * @param unixTimeStamp unix timestamp when to expire
+   * @param option Expire options: NX, XX, GT or LT
+   * @param field Field to set expire
+   * @param ...arguments Further fields to set expire
+   * @return Array<Dynamic>
+   */
+  public function hexpireat(key:String, unixTimeStamp:Int, option:String, field:String, ...arguments:String):Array<Dynamic> {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    param.push(Std.string(unixTimeStamp));
+    if (option == 'NX' || option == 'XX' || option == 'GT' || option == 'LT') {
+      param.push(option);
+    }
+    param.push('FIELDS');
+    param.push(Std.string(1 + arguments.length));
+    param.push(field);
+    for (arg in arguments) {
+      param.push(arg);
+    }
+    // return command result
+    return cast(this.command('HEXPIREAT', param), Array<Dynamic>);
+  }
+
+  /**
+   * HEXPIRETIME
+   * @param key Hashmap key
+   * @param field Field to get expire time
+   * @param ...arguments Further fields to get expire times
+   * @return Array<Dynamic>
+   */
+  public function hexpiretime(key:String, field:String, ...arguments:String):Array<Dynamic> {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    param.push('FIELDS');
+    param.push(Std.string(1 + arguments.length));
+    param.push(field);
+    for (arg in arguments) {
+      param.push(arg);
+    }
+    // return command result
+    return cast(this.command('HEXPIRETIME', param), Array<Dynamic>);
+  }
+
+  /**
    * HGET
    * @param key Hashmap key
    * @param field Field to get value of

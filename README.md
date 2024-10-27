@@ -32,6 +32,9 @@ Currently supported commands
 * GET
 * HDEL
 * HEXISTS
+* HEXPIRE
+* HEXPIREAT
+* HEXPIRETIME
 * HGET
 * HGETALL
 * HKEYS
