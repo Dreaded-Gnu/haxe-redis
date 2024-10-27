@@ -123,8 +123,15 @@ class Redis {
     for (arg in args) {
       sb.add(this.buildArgument(arg));
     }
+    #if !eval
+    // wait for output
+    var result:{read:Array<Socket>, write:Array<Socket>, others:Array<Socket>} = Socket.select(null, [this.sock,], null);
+    // finally send command
+    result.write[0].output.writeString(sb.toString());
+    #else
     // finally send command
     this.sock.output.writeString(sb.toString());
+    #end
   }
 
   /**
@@ -136,21 +143,15 @@ class Redis {
     if (null == this.sock) {
       throw new Error('-ERR Not connected!');
     }
+    #if !eval
+    // wait for input
+    var result:{read:Array<Socket>, write:Array<Socket>, others:Array<Socket>} = Socket.select([this.sock,], null, null);
     // read from socket
-    var line:String = '';
-    while (true)
-    {
-      try {
-        // try to read
-        line = this.sock.input.readLine();
-        // break if successful
-        break;
-      } catch (e:Dynamic) {
-        if (e == haxe.io.Error.Blocked) {} else {
-          throw e;
-        }
-      }
-    }
+    var line:String = result.read[0].input.readLine();
+    #else
+    // read from socket
+    var line:String = this.sock.input.readLine();
+    #end
     // handle read line
     switch (line.charCodeAt(0)) {
       // string

@@ -138,7 +138,7 @@ class RedisTestHashmap extends utest.Test {
   /**
    * Test hkeys
    */
-   public function testHkeys():Void {
+  public function testHkeys():Void {
     Assert.equals(1, this.redis.hset("myhash", "field1", "Hello"));
     Assert.equals(2, this.redis.hset("myhash", "field2", "Hi", "field3", "World"));
     var a:Array<Dynamic> = this.redis.hkeys("myhash");
@@ -153,7 +153,7 @@ class RedisTestHashmap extends utest.Test {
   /**
    * Test hlen
    */
-   public function testHlen():Void {
+  public function testHlen():Void {
     Assert.equals(1, this.redis.hset("myhash", "field1", "Hello"));
     Assert.equals(2, this.redis.hset("myhash", "field2", "Hi", "field3", "World"));
     Assert.equals(3, this.redis.hlen("myhash"));
