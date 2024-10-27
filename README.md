@@ -38,8 +38,8 @@ Currently supported commands
 * HLEN
 * HSET
 * PING
-* SET / SETEX
 * SELECT
+* SET / SETEX
 * STRLEN
 
 ## installation

@@ -1,8 +1,0 @@
---class-path src
---class-path test
---define analyzer-optimize
---define UTEST_PRINT_TESTS
---define UTEST_FAILURE_THROW
---library utest
---run test.TestAll
---dce full

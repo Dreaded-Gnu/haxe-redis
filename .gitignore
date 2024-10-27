@@ -2,3 +2,4 @@
 .unittest
 bin
 docs
+test/Test

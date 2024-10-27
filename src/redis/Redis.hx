@@ -136,7 +136,22 @@ class Redis {
     if (null == this.sock) {
       throw new Error('-ERR Not connected!');
     }
-    var line:String = this.sock.input.readLine();
+    // read from socket
+    var line:String = '';
+    while (true)
+    {
+      try {
+        // try to read
+        line = this.sock.input.readLine();
+        // break if successful
+        break;
+      } catch (e:Dynamic) {
+        if (e == haxe.io.Error.Blocked) {} else {
+          throw e;
+        }
+      }
+    }
+    // handle read line
     switch (line.charCodeAt(0)) {
       // string
       case "+".code:
