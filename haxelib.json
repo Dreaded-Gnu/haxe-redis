@@ -6,7 +6,7 @@
     "redis"
   ],
   "description": "haxe-redis is a library, which allows to use redis.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "releasenote": "Initial release",
   "contributors": [
     "DreadedGnu"
