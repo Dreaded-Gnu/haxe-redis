@@ -338,9 +338,9 @@ class Redis {
    * @param option Expire options: NX, XX, GT, LT
    * @param field Field to set expire
    * @param ...arguments Further fields to set expire
-   * @return Array<Dynamic>
+   * @return Array<Int>
    */
-  public function hexpire(key:String, expire:Int, option:String, field:String, ...arguments:String):Array<Dynamic> {
+  public function hexpire(key:String, expire:Int, option:String, field:String, ...arguments:String):Array<Int> {
     // setup param array
     var param:Array<String> = new Array<String>();
     // push params
@@ -356,7 +356,7 @@ class Redis {
       param.push(arg);
     }
     // return command result
-    return cast(this.command('HEXPIRE', param), Array<Dynamic>);
+    return cast this.command('HEXPIRE', param);
   }
 
   /**
@@ -366,9 +366,9 @@ class Redis {
    * @param option Expire options: NX, XX, GT or LT
    * @param field Field to set expire
    * @param ...arguments Further fields to set expire
-   * @return Array<Dynamic>
+   * @return Array<Int>
    */
-  public function hexpireat(key:String, unixTimeStamp:Int, option:String, field:String, ...arguments:String):Array<Dynamic> {
+  public function hexpireat(key:String, unixTimeStamp:Int, option:String, field:String, ...arguments:String):Array<Int> {
     // setup param array
     var param:Array<String> = new Array<String>();
     // push params
@@ -384,7 +384,7 @@ class Redis {
       param.push(arg);
     }
     // return command result
-    return cast(this.command('HEXPIREAT', param), Array<Dynamic>);
+    return cast this.command('HEXPIREAT', param);
   }
 
   /**
@@ -392,9 +392,9 @@ class Redis {
    * @param key Hashmap key
    * @param field Field to get expire time
    * @param ...arguments Further fields to get expire times
-   * @return Array<Dynamic>
+   * @return Array<Int>
    */
-  public function hexpiretime(key:String, field:String, ...arguments:String):Array<Dynamic> {
+  public function hexpiretime(key:String, field:String, ...arguments:String):Array<Int> {
     // setup param array
     var param:Array<String> = new Array<String>();
     // push params
@@ -406,7 +406,7 @@ class Redis {
       param.push(arg);
     }
     // return command result
-    return cast(this.command('HEXPIRETIME', param), Array<Dynamic>);
+    return cast this.command('HEXPIRETIME', param);
   }
 
   /**
@@ -424,8 +424,8 @@ class Redis {
    * @param key Hashmap key
    * @return Array of field entry pairs
    */
-  public function hgetall(key:String):Array<Dynamic> {
-    return cast(this.command('HGETALL', [key,]), Array<Dynamic>);
+  public function hgetall(key:String):Array<String> {
+    return cast this.command('HGETALL', [key,]);
   }
 
   /**
@@ -435,7 +435,7 @@ class Redis {
    * @param ...arguments Further fields to get and delete
    * @return Array of deleted values
    */
-  public function hgetdel(key:String, field:String, ...arguments:String):Array<Dynamic> {
+  public function hgetdel(key:String, field:String, ...arguments:String):Array<String> {
     // setup param array
     var param:Array<String> = new Array<String>();
     // push params
@@ -447,7 +447,7 @@ class Redis {
       param.push(arg);
     }
     // return command result
-    return cast(this.command('HGETDEL', param), Array<Dynamic>);
+    return cast this.command('HGETDEL', param);
   }
 
   /**
@@ -457,9 +457,9 @@ class Redis {
    * @param option Expire options: EX, PX, EXAT, PXAT or PERSIST
    * @param field Field to get/clear expire
    * @param ...arguments Further fields to set expire
-   * @return Array<Dynamic>
+   * @return Array<Int>
    */
-  public function hgetex(key:String, expire:Int, option:String, field:String, ...arguments:String):Array<Dynamic> {
+  public function hgetex(key:String, expire:Int, option:String, field:String, ...arguments:String):Array<Int> {
     // setup param array
     var param:Array<String> = new Array<String>();
     // push params
@@ -477,7 +477,7 @@ class Redis {
       param.push(arg);
     }
     // return command result
-    return cast(this.command('HGETEX', param), Array<Dynamic>);
+    return cast this.command('HGETEX', param);
   }
 
   /**
@@ -521,8 +521,8 @@ class Redis {
    * @param key Hashmap key
    * @return Array of fields
    */
-  public function hkeys(key:String):Array<Dynamic> {
-    return cast(this.command('HKEYS', [key,]), Array<Dynamic>);
+  public function hkeys(key:String):Array<String> {
+    return cast this.command('HKEYS', [key,]);
   }
 
   /**
@@ -539,9 +539,9 @@ class Redis {
    * @param key Hashmap key
    * @param field Field to get
    * @param ...arguments Additional fields to get
-   * @return Array<Dynamic>
+   * @return Array<String>
    */
-  public function hmget(key:String, field:String, ...arguments:String):Array<Dynamic> {
+  public function hmget(key:String, field:String, ...arguments:String):Array<String> {
     // setup param array
     var param:Array<String> = new Array<String>();
     // push params
@@ -551,7 +551,7 @@ class Redis {
       param.push(arg);
     }
     // return command result
-    return cast(this.command('HMGET', param), Array<Dynamic>);
+    return cast this.command('HMGET', param);
   }
 
   /**
@@ -585,9 +585,9 @@ class Redis {
    * @param key Hashmap key
    * @param field Field to persist
    * @param ...arguments Further fields to persist
-   * @return Array<Dynamic>
+   * @return Array<Int>
    */
-  public function hpersist(key:String, field:String, ...arguments:String):Array<Dynamic> {
+  public function hpersist(key:String, field:String, ...arguments:String):Array<Int> {
     // handle invalid data
     if (0 != arguments.length % 2) {
       throw new Exception('Invalid additional arguments passed!');
@@ -603,7 +603,7 @@ class Redis {
       param.push(arg);
     }
     // return command result
-    return cast(this.command('HPERSIST', param), Array<Dynamic>);
+    return cast this.command('HPERSIST', param);
   }
 
   /**
@@ -613,9 +613,9 @@ class Redis {
    * @param option Expire options: NX, XX, GT, LT
    * @param field Field to set expire
    * @param ...arguments Further fields to set expire
-   * @return Array<Dynamic>
+   * @return Array<Int>
    */
-  public function hpexpire(key:String, expire:Int, option:String, field:String, ...arguments:String):Array<Dynamic> {
+  public function hpexpire(key:String, expire:Int, option:String, field:String, ...arguments:String):Array<Int> {
     // setup param array
     var param:Array<String> = new Array<String>();
     // push params
@@ -631,7 +631,7 @@ class Redis {
       param.push(arg);
     }
     // return command result
-    return cast(this.command('HPEXPIRE', param), Array<Dynamic>);
+    return cast this.command('HPEXPIRE', param);
   }
 
   /**
@@ -641,9 +641,9 @@ class Redis {
    * @param option Expire options: NX, XX, GT or LT
    * @param field Field to set expire
    * @param ...arguments Further fields to set expire
-   * @return Array<Dynamic>
+   * @return Array<Int>
    */
-  public function hpexpireat(key:String, unixTimeMilliseconds:Int, option:String, field:String, ...arguments:String):Array<Dynamic> {
+  public function hpexpireat(key:String, unixTimeMilliseconds:Int, option:String, field:String, ...arguments:String):Array<Int> {
     // setup param array
     var param:Array<String> = new Array<String>();
     // push params
@@ -659,7 +659,7 @@ class Redis {
       param.push(arg);
     }
     // return command result
-    return cast(this.command('HPEXPIREAT', param), Array<Dynamic>);
+    return cast this.command('HPEXPIREAT', param);
   }
 
   /**
@@ -667,9 +667,9 @@ class Redis {
    * @param key Hashmap key
    * @param field Field to get expire time
    * @param ...arguments Further fields to get expire times
-   * @return Array<Dynamic>
+   * @return Array<Int>
    */
-  public function hpexpiretime(key:String, field:String, ...arguments:String):Array<Dynamic> {
+  public function hpexpiretime(key:String, field:String, ...arguments:String):Array<Int> {
     // setup param array
     var param:Array<String> = new Array<String>();
     // push params
@@ -681,7 +681,7 @@ class Redis {
       param.push(arg);
     }
     // return command result
-    return cast(this.command('HPEXPIRETIME', param), Array<Dynamic>);
+    return cast this.command('HPEXPIRETIME', param);
   }
 
   /**
@@ -689,9 +689,9 @@ class Redis {
    * @param key Hashmap key
    * @param field Field to get remaining ttl
    * @param ...arguments Further fields to get remaining ttl
-   * @return Array<Dynamic>
+   * @return Array<Int>
    */
-  public function hpttl(key:String, field:String, ...arguments:String):Array<Dynamic> {
+  public function hpttl(key:String, field:String, ...arguments:String):Array<Int> {
     // setup param array
     var param:Array<String> = new Array<String>();
     // push params
@@ -703,7 +703,7 @@ class Redis {
       param.push(arg);
     }
     // return command result
-    return cast(this.command('HPTTL', param), Array<Dynamic>);
+    return cast this.command('HPTTL', param);
   }
 
   /**
