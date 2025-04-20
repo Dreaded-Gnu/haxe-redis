@@ -1,5 +1,6 @@
 package redis;
 
+import haxe.Exception;
 import sys.net.Host;
 import sys.net.Socket;
 #if (target.threaded)
@@ -82,7 +83,7 @@ class Redis {
    * @param response
    * @return Bool
    */
-  private function validateOk(response:Dynamic):Bool {
+  private function validateOk(response:Any):Bool {
     var s:String = cast(response, String);
     if (Redis.OK != s) {
       throw new Error('-ERR Assertion failed: ${s}');
@@ -136,9 +137,9 @@ class Redis {
 
   /**
    * Receive helper
-   * @return Dynamic
+   * @return Any
    */
-  private function receive():Dynamic {
+  private function receive():Any {
     // handle not connected
     if (null == this.sock) {
       throw new Error('-ERR Not connected!');
@@ -181,7 +182,7 @@ class Redis {
         if (l == -1) {
           return null;
         }
-        var a:Array<Dynamic> = new Array<Dynamic>();
+        var a:Array<Any> = new Array<Any>();
         for (i in 0...l) {
           a.push(receive());
         }
@@ -200,9 +201,9 @@ class Redis {
    * Issue a specific command with arguments
    * @param cmd
    * @param args
-   * @return Dynamic
+   * @return Any
    */
-  private function command(cmd:String, ?args:Array<String>):Dynamic {
+  private function command(cmd:String, ?args:Array<String>):Any {
     // acquire mutex
     #if (target.threaded)
     this.socketMutex.acquire();
@@ -210,7 +211,7 @@ class Redis {
     // send command
     this.send(cmd, args);
     // receive response
-    var response:Dynamic = this.receive();
+    var response:Any = this.receive();
     // release mutex
     #if (target.threaded)
     this.socketMutex.release();
@@ -428,8 +429,96 @@ class Redis {
   }
 
   /**
+   * HGETDEL
+   * @param key hashmap key
+   * @param field Field to get and delete
+   * @param ...arguments Further fields to get and delete
+   * @return Array of deleted values
+   */
+  public function hgetdel(key:String, field:String, ...arguments:String):Array<Dynamic> {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    param.push('FIELDS');
+    param.push(Std.string(1 + arguments.length));
+    param.push(field);
+    for (arg in arguments) {
+      param.push(arg);
+    }
+    // return command result
+    return cast(this.command('HGETDEL', param), Array<Dynamic>);
+  }
+
+  /**
+   * HGETEX
+   * @param key Hashmap key
+   * @param expire expire in seconds, milliseconds, unix time seconds or unix time milliseconds
+   * @param option Expire options: EX, PX, EXAT, PXAT or PERSIST
+   * @param field Field to get/clear expire
+   * @param ...arguments Further fields to set expire
+   * @return Array<Dynamic>
+   */
+  public function hgetex(key:String, expire:Int, option:String, field:String, ...arguments:String):Array<Dynamic> {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    if (option == 'EX' || option == 'PX' || option == 'EXAT' || option == 'PXAT') {
+      param.push(option);
+      param.push(Std.string(expire));
+    } else if (option == 'PERSIST') {
+      param.push(option);
+    }
+    param.push('FIELDS');
+    param.push(Std.string(1 + arguments.length));
+    param.push(field);
+    for (arg in arguments) {
+      param.push(arg);
+    }
+    // return command result
+    return cast(this.command('HGETEX', param), Array<Dynamic>);
+  }
+
+  /**
+   * HINCRBY
+   * @param key Hashmap key
+   * @param field Field to increment
+   * @param increment Increment value
+   * @return Int
+   */
+  public function hincrby(key:String, field:String, increment:Int):Int {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    param.push(field);
+    param.push(Std.string(increment));
+    // return command result
+    return cast(this.command('HINCRBY', param), Int);
+  }
+
+  /**
+   * HINCRBYFLOAT
+   * @param key Hashmap key
+   * @param field Field to increment
+   * @param increment Increment value
+   * @return Float
+   */
+  public function hincrbyfloat(key:String, field:String, increment:Float):Float {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    param.push(field);
+    param.push(Std.string(increment));
+    // return command result
+    return cast(this.command('HINCRBYFLOAT', param), Float);
+  }
+
+  /**
    * HKEYS
-   * @param key Hashmap keys
+   * @param key Hashmap key
    * @return Array of fields
    */
   public function hkeys(key:String):Array<Dynamic> {
@@ -443,6 +532,178 @@ class Redis {
    */
   public function hlen(key:String):Int {
     return cast(this.command('HLEN', [key,]), Int);
+  }
+
+  /**
+   * HMGET
+   * @param key Hashmap key
+   * @param field Field to get
+   * @param ...arguments Additional fields to get
+   * @return Array<Dynamic>
+   */
+  public function hmget(key:String, field:String, ...arguments:String):Array<Dynamic> {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    param.push(field);
+    for (arg in arguments) {
+      param.push(arg);
+    }
+    // return command result
+    return cast(this.command('HMGET', param), Array<Dynamic>);
+  }
+
+  /**
+   * HMSET
+   * @param key Hashmap key
+   * @param field Field to set
+   * @param value Value to set
+   * @param ...arguments Additional fields and values to set
+   * @return String
+   */
+  public function hmset(key:String, field:String, value:String, ...arguments:String):String {
+    // handle invalid data
+    if (0 != arguments.length % 2) {
+      throw new Exception('Invalid additional arguments passed!');
+    }
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    param.push(field);
+    param.push(value);
+    for (arg in arguments) {
+      param.push(arg);
+    }
+    // return command result
+    return cast(this.command('HMSET', param), String);
+  }
+
+  /**
+   * HPERSIST
+   * @param key Hashmap key
+   * @param field Field to persist
+   * @param ...arguments Further fields to persist
+   * @return Array<Dynamic>
+   */
+  public function hpersist(key:String, field:String, ...arguments:String):Array<Dynamic> {
+    // handle invalid data
+    if (0 != arguments.length % 2) {
+      throw new Exception('Invalid additional arguments passed!');
+    }
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    param.push('FIELDS');
+    param.push(Std.string(1 + arguments.length));
+    param.push(field);
+    for (arg in arguments) {
+      param.push(arg);
+    }
+    // return command result
+    return cast(this.command('HPERSIST', param), Array<Dynamic>);
+  }
+
+  /**
+   * HPEXPIRE
+   * @param key Hashmap key
+   * @param expire Expire in milliseconds
+   * @param option Expire options: NX, XX, GT, LT
+   * @param field Field to set expire
+   * @param ...arguments Further fields to set expire
+   * @return Array<Dynamic>
+   */
+  public function hpexpire(key:String, expire:Int, option:String, field:String, ...arguments:String):Array<Dynamic> {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    param.push(Std.string(expire));
+    if (option == 'NX' || option == 'XX' || option == 'GT' || option == 'LT') {
+      param.push(option);
+    }
+    param.push('FIELDS');
+    param.push(Std.string(1 + arguments.length));
+    param.push(field);
+    for (arg in arguments) {
+      param.push(arg);
+    }
+    // return command result
+    return cast(this.command('HPEXPIRE', param), Array<Dynamic>);
+  }
+
+  /**
+   * HPEXPIREAT
+   * @param key Hashmap key
+   * @param unixTimeMilliseconds unix timestamp in milliseconds when to expire
+   * @param option Expire options: NX, XX, GT or LT
+   * @param field Field to set expire
+   * @param ...arguments Further fields to set expire
+   * @return Array<Dynamic>
+   */
+  public function hpexpireat(key:String, unixTimeMilliseconds:Int, option:String, field:String, ...arguments:String):Array<Dynamic> {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    param.push(Std.string(unixTimeMilliseconds));
+    if (option == 'NX' || option == 'XX' || option == 'GT' || option == 'LT') {
+      param.push(option);
+    }
+    param.push('FIELDS');
+    param.push(Std.string(1 + arguments.length));
+    param.push(field);
+    for (arg in arguments) {
+      param.push(arg);
+    }
+    // return command result
+    return cast(this.command('HPEXPIREAT', param), Array<Dynamic>);
+  }
+
+  /**
+   * HPEXPIRETIME
+   * @param key Hashmap key
+   * @param field Field to get expire time
+   * @param ...arguments Further fields to get expire times
+   * @return Array<Dynamic>
+   */
+  public function hpexpiretime(key:String, field:String, ...arguments:String):Array<Dynamic> {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    param.push('FIELDS');
+    param.push(Std.string(1 + arguments.length));
+    param.push(field);
+    for (arg in arguments) {
+      param.push(arg);
+    }
+    // return command result
+    return cast(this.command('HPEXPIRETIME', param), Array<Dynamic>);
+  }
+
+  /**
+   * HPTTL
+   * @param key Hashmap key
+   * @param field Field to get remaining ttl
+   * @param ...arguments Further fields to get remaining ttl
+   * @return Array<Dynamic>
+   */
+  public function hpttl(key:String, field:String, ...arguments:String):Array<Dynamic> {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    param.push('FIELDS');
+    param.push(Std.string(1 + arguments.length));
+    param.push(field);
+    for (arg in arguments) {
+      param.push(arg);
+    }
+    // return command result
+    return cast(this.command('HPTTL', param), Array<Dynamic>);
   }
 
   /**
