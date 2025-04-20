@@ -1,7 +1,6 @@
-version: '3.1'
 services:
   redis:
-    image: redis:latest
+    image: redis:8.0-rc1-alpine
     restart: always
     ports:
       - 6379:6379

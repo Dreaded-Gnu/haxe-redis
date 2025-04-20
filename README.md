@@ -51,6 +51,7 @@ Currently supported commands
 * HPEXPIRETIME
 * HPTTL
 * HSET
+* HTTL
 * PING
 * SELECT
 * SET / SETEX

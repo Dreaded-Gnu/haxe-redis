@@ -1,5 +1,6 @@
 package test;
 
+import haxe.Timer;
 import utest.Assert;
 import redis.Redis;
 
@@ -50,7 +51,7 @@ class RedisTestHashmap extends utest.Test {
    */
   public function testHexpire():Void {
     Assert.equals(3, this.redis.hset("myhash", "field1", "Hello", "field2", "World", "field3", "Bar"));
-    var a:Array<Dynamic> = this.redis.hexpire("myhash", 300, "", "field1", "field2");
+    var a:Array<Int> = this.redis.hexpire("myhash", 300, "", "field1", "field2");
     Assert.equals(2, a.length);
     for (entry in a) {
       Assert.equals(1, entry);
@@ -71,7 +72,7 @@ class RedisTestHashmap extends utest.Test {
   public function testHexpireat():Void {
     Assert.equals(3, this.redis.hset("myhash", "field1", "Hello", "field2", "World", "field3", "Bar"));
     var timestamp:Int = Std.int(Sys.time()) + 3600;
-    var a:Array<Dynamic> = this.redis.hexpireat("myhash", timestamp, "", "field1", "field2");
+    var a:Array<Int> = this.redis.hexpireat("myhash", timestamp, "", "field1", "field2");
     Assert.equals(2, a.length);
     for (entry in a) {
       Assert.equals(1, entry);
@@ -89,7 +90,7 @@ class RedisTestHashmap extends utest.Test {
    */
   public function testHexpiretime():Void {
     Assert.equals(3, this.redis.hset("myhash", "field1", "Hello", "field2", "World", "field3", "Bar"));
-    var a:Array<Dynamic> = this.redis.hexpire("myhash", 300, "", "field1", "field2");
+    var a:Array<Int> = this.redis.hexpire("myhash", 300, "", "field1", "field2");
     Assert.equals(2, a.length);
     for (entry in a) {
       Assert.equals(1, entry);
@@ -123,7 +124,7 @@ class RedisTestHashmap extends utest.Test {
   public function testHgetall():Void {
     Assert.equals(1, this.redis.hset("myhash", "field1", "Hello"));
     Assert.equals(2, this.redis.hset("myhash", "field2", "Hi", "field3", "World"));
-    var a:Array<Dynamic> = this.redis.hgetall("myhash");
+    var a:Array<String> = this.redis.hgetall("myhash");
     Assert.equals(6, a.length);
     Assert.equals("field1", a[0]);
     Assert.equals("Hello", a[1]);
@@ -141,7 +142,7 @@ class RedisTestHashmap extends utest.Test {
   public function testHkeys():Void {
     Assert.equals(1, this.redis.hset("myhash", "field1", "Hello"));
     Assert.equals(2, this.redis.hset("myhash", "field2", "Hi", "field3", "World"));
-    var a:Array<Dynamic> = this.redis.hkeys("myhash");
+    var a:Array<String> = this.redis.hkeys("myhash");
     Assert.equals(3, a.length);
     Assert.equals("field1", a[0]);
     Assert.equals("field2", a[1]);
@@ -166,5 +167,205 @@ class RedisTestHashmap extends utest.Test {
   public function testHset():Void {
     Assert.equals(1, this.redis.hset("myhash", "field1", "Hello"));
     Assert.equals(2, this.redis.hset("myhash", "field2", "Hi", "field3", "World"));
+  }
+
+  /**
+   * Test hgetdel
+   */
+  public function testHgetdel():Void {
+    Assert.equals(1, this.redis.hset("myhash", "field1", "Hello"));
+    Assert.equals(1, this.redis.hgetdel("myhash", "field1").length);
+    Assert.equals(0, this.redis.hlen("myhash"));
+  }
+
+  /**
+   * Test hgetex
+   */
+  public function testHgetex():Void {
+    Assert.equals(3, this.redis.hset("myhash", "field1", "Hello", "field2", "World", "field3", "Bar"));
+    var a:Array<String> = this.redis.hgetex("myhash", 300, "EX", "field1", "field2");
+    Assert.equals(2, a.length);
+    Assert.equals("Hello", a[0]);
+    Assert.equals("World", a[1]);
+    var b:Array<Int> = this.redis.httl("myhash", "field1", "field2", "field3", "field4");
+    Assert.equals(4, b.length);
+    Assert.notEquals(0, b[0]);
+    Assert.notEquals(-1, b[0]);
+    Assert.notEquals(0, b[1]);
+    Assert.notEquals(-1, b[1]);
+    Assert.equals(-1, b[2]);
+    Assert.equals(-2, b[3]);
+  }
+
+  /**
+   * Test hincrby
+   */
+  public function testHincrby():Void {
+    Assert.equals(1, this.redis.hset("myhash", "field1", "5"));
+    var val:Int = this.redis.hincrby("myhash", "field1", 1);
+    Assert.equals(6, val);
+    Assert.equals(6, Std.parseInt(this.redis.hget("myhash", "field1")));
+  }
+
+  /**
+   * Test hincrbyfloat
+   */
+  public function testHincrbyfloat():Void {
+    Assert.equals(1, this.redis.hset("myhash", "field1", "10.50"));
+    var val:Float = this.redis.hincrbyfloat("myhash", "field1", 0.1);
+    Assert.equals(10.6, val);
+    Assert.equals(10.6, Std.parseFloat(this.redis.hget("myhash", "field1")));
+  }
+
+  /**
+   * Test hmset
+   */
+  public function testHmset():Void {
+    Assert.equals("OK", this.redis.hmset("myhash", "field1", "Hello", "field2", "World"));
+    var a:Array<String> = this.redis.hmget("myhash", "field1", "field2", "nofield");
+    Assert.equals(3, a.length);
+    Assert.equals("Hello", a[0]);
+    Assert.equals("World", a[1]);
+    Assert.equals(null, a[2]);
+  }
+
+  /**
+   * Test hmget
+   */
+  public function testHmget():Void {
+    Assert.equals(3, this.redis.hset("myhash", "field1", "Hello", "field2", "World", "field3", "Bar"));
+    var a:Array<String> = this.redis.hmget("myhash", "field1", "field2", "nofield");
+    Assert.equals(3, a.length);
+    Assert.equals("Hello", a[0]);
+    Assert.equals("World", a[1]);
+    Assert.equals(null, a[2]);
+  }
+
+  /**
+   * Test hpersist
+   */
+  public function testHpersist():Void {
+    Assert.equals(3, this.redis.hset("myhash", "field1", "Hello", "field2", "World", "field3", "Bar"));
+    var a:Array<Int> = this.redis.hexpire("myhash", 300, "", "field1", "field2");
+    Assert.equals(2, a.length);
+    for (entry in a) {
+      Assert.equals(1, entry);
+    }
+    a = this.redis.httl("myhash", "field1", "field2", "field3", "field4");
+    Assert.equals(4, a.length);
+    Assert.notEquals(0, a[0]);
+    Assert.notEquals(-1, a[0]);
+    Assert.notEquals(0, a[1]);
+    Assert.notEquals(-1, a[1]);
+    Assert.equals(-1, a[2]);
+    Assert.equals(-2, a[3]);
+    this.redis.hpersist("myhash", "field1", "field3");
+    a = this.redis.httl("myhash", "field1", "field2", "field3", "field4");
+    Assert.equals(4, a.length);
+    Assert.equals(-1, a[0]);
+    Assert.notEquals(0, a[1]);
+    Assert.notEquals(-1, a[1]);
+    Assert.equals(-1, a[2]);
+    Assert.equals(-2, a[3]);
+  }
+
+  /**
+   * Test hpexpire
+   */
+  @:timeout(5000)
+  public function testHpexpire(async:utest.Async):Void {
+    Assert.equals(3, this.redis.hset("myhash", "field1", "Hello", "field2", "World", "field3", "Bar"));
+    var a:Array<Float> = this.redis.hpexpire("myhash", 2000, "", "field1", "field2");
+    for (entry in a) {
+      Assert.equals(1, entry);
+    }
+    // delay one second
+    Timer.delay(() -> {
+      // now return should be 1
+      Assert.equals(1, this.redis.hkeys("myhash").length);
+      // mark async as done
+      async.done();
+    }, 2000);
+  }
+
+  /**
+   * Test hpexpireat
+   */
+  @:timeout(5000)
+  public function testHpexpireat(async:utest.Async):Void {
+    Assert.equals(3, this.redis.hset("myhash", "field1", "Hello", "field2", "World", "field3", "Bar"));
+    var a:Array<Int> = this.redis.hpexpireat("myhash", Timer.stamp() * 1000 + 2000, "", "field1", "field2");
+    Assert.equals(2, a.length);
+    for (entry in a) {
+      Assert.equals(1, entry);
+    }
+    // delay one second
+    Timer.delay(() -> {
+      // now return should be 1
+      Assert.equals(1, this.redis.hkeys("myhash").length);
+      // mark async as done
+      async.done();
+    }, 2500);
+  }
+
+  /**
+   * Test hpexpiretime
+   */
+  public function testHpexpiretime():Void {
+    Assert.equals(3, this.redis.hset("myhash", "field1", "Hello", "field2", "World", "field3", "Bar"));
+    var a:Array<Int> = this.redis.hexpire("myhash", 300, "", "field1", "field2");
+    Assert.equals(2, a.length);
+    for (entry in a) {
+      Assert.equals(1, entry);
+    }
+    var b:Array<Float> = this.redis.hpexpiretime("myhash", "field1", "field2", "field3");
+    Assert.equals(3, b.length);
+    Assert.notNull(b[0]);
+    Assert.notEquals(0, b[0]);
+    Assert.notEquals(-1, b[0]);
+    Assert.notNull(b[1]);
+    Assert.notEquals(0, b[1]);
+    Assert.notEquals(-1, b[1]);
+    Assert.equals(-1, b[2]);
+  }
+
+  /**
+   * Test hpttl
+   */
+  public function testHpttl():Void {
+    Assert.equals(3, this.redis.hset("myhash", "field1", "Hello", "field2", "World", "field3", "Bar"));
+    var a:Array<Int> = this.redis.hexpire("myhash", 300, "", "field1", "field2");
+    Assert.equals(2, a.length);
+    for (entry in a) {
+      Assert.equals(1, entry);
+    }
+    var b:Array<Float> = this.redis.hpttl("myhash", "field1", "field2", "field3", "field4");
+    Assert.equals(4, b.length);
+    Assert.notEquals(0, b[0]);
+    Assert.notEquals(-1, b[0]);
+    Assert.notEquals(0, b[1]);
+    Assert.notEquals(-1, b[1]);
+    Assert.equals(-1, b[2]);
+    Assert.equals(-2, b[3]);
+  }
+
+  /**
+   * Test httl
+   */
+  public function testHttl():Void {
+    Assert.equals(3, this.redis.hset("myhash", "field1", "Hello", "field2", "World", "field3", "Bar"));
+    var a:Array<Int> = this.redis.hexpire("myhash", 300, "", "field1", "field2");
+    Assert.equals(2, a.length);
+    for (entry in a) {
+      Assert.equals(1, entry);
+    }
+    a = this.redis.httl("myhash", "field1", "field2", "field3", "field4");
+    Assert.equals(4, a.length);
+    Assert.notEquals(0, a[0]);
+    Assert.notEquals(-1, a[0]);
+    Assert.notEquals(0, a[1]);
+    Assert.notEquals(-1, a[1]);
+    Assert.equals(-1, a[2]);
+    Assert.equals(-2, a[3]);
   }
 }

@@ -161,7 +161,7 @@ class Redis {
 
       // int
       case ":".code:
-        return Std.parseInt(line.substr(1));
+        return Std.parseFloat(line.substr(1));
 
       // bulk
       case "$".code:
@@ -457,16 +457,16 @@ class Redis {
    * @param option Expire options: EX, PX, EXAT, PXAT or PERSIST
    * @param field Field to get/clear expire
    * @param ...arguments Further fields to set expire
-   * @return Array<Int>
+   * @return Array<String>
    */
-  public function hgetex(key:String, expire:Int, option:String, field:String, ...arguments:String):Array<Int> {
+  public function hgetex(key:String, expire:Float, option:String, field:String, ...arguments:String):Array<String> {
     // setup param array
     var param:Array<String> = new Array<String>();
     // push params
     param.push(key);
     if (option == 'EX' || option == 'PX' || option == 'EXAT' || option == 'PXAT') {
       param.push(option);
-      param.push(Std.string(expire));
+      param.push(Std.string(Math.ffloor(expire)));
     } else if (option == 'PERSIST') {
       param.push(option);
     }
@@ -513,7 +513,7 @@ class Redis {
     param.push(field);
     param.push(Std.string(increment));
     // return command result
-    return cast(this.command('HINCRBYFLOAT', param), Float);
+    return Std.parseFloat(cast(this.command('HINCRBYFLOAT', param), String));
   }
 
   /**
@@ -588,10 +588,6 @@ class Redis {
    * @return Array<Int>
    */
   public function hpersist(key:String, field:String, ...arguments:String):Array<Int> {
-    // handle invalid data
-    if (0 != arguments.length % 2) {
-      throw new Exception('Invalid additional arguments passed!');
-    }
     // setup param array
     var param:Array<String> = new Array<String>();
     // push params
@@ -613,14 +609,14 @@ class Redis {
    * @param option Expire options: NX, XX, GT, LT
    * @param field Field to set expire
    * @param ...arguments Further fields to set expire
-   * @return Array<Int>
+   * @return Array<Float>
    */
-  public function hpexpire(key:String, expire:Int, option:String, field:String, ...arguments:String):Array<Int> {
+  public function hpexpire(key:String, expire:Float, option:String, field:String, ...arguments:String):Array<Float> {
     // setup param array
     var param:Array<String> = new Array<String>();
     // push params
     param.push(key);
-    param.push(Std.string(expire));
+    param.push(Std.string(Math.ffloor(expire)));
     if (option == 'NX' || option == 'XX' || option == 'GT' || option == 'LT') {
       param.push(option);
     }
@@ -643,12 +639,12 @@ class Redis {
    * @param ...arguments Further fields to set expire
    * @return Array<Int>
    */
-  public function hpexpireat(key:String, unixTimeMilliseconds:Int, option:String, field:String, ...arguments:String):Array<Int> {
+  public function hpexpireat(key:String, unixTimeMilliseconds:Float, option:String, field:String, ...arguments:String):Array<Int> {
     // setup param array
     var param:Array<String> = new Array<String>();
     // push params
     param.push(key);
-    param.push(Std.string(unixTimeMilliseconds));
+    param.push(Std.string(Math.ffloor(unixTimeMilliseconds)));
     if (option == 'NX' || option == 'XX' || option == 'GT' || option == 'LT') {
       param.push(option);
     }
@@ -667,9 +663,9 @@ class Redis {
    * @param key Hashmap key
    * @param field Field to get expire time
    * @param ...arguments Further fields to get expire times
-   * @return Array<Int>
+   * @return Array<Float>
    */
-  public function hpexpiretime(key:String, field:String, ...arguments:String):Array<Int> {
+  public function hpexpiretime(key:String, field:String, ...arguments:String):Array<Float> {
     // setup param array
     var param:Array<String> = new Array<String>();
     // push params
@@ -689,9 +685,9 @@ class Redis {
    * @param key Hashmap key
    * @param field Field to get remaining ttl
    * @param ...arguments Further fields to get remaining ttl
-   * @return Array<Int>
+   * @return Array<Float>
    */
-  public function hpttl(key:String, field:String, ...arguments:String):Array<Int> {
+  public function hpttl(key:String, field:String, ...arguments:String):Array<Float> {
     // setup param array
     var param:Array<String> = new Array<String>();
     // push params
@@ -732,6 +728,28 @@ class Redis {
     }
     // return command result casted to int
     return cast(this.command('HSET', param), Int);
+  }
+
+  /**
+   * HTTL
+   * @param key
+   * @param field
+   * @param ...arguments
+   * @return Array<Int>
+   */
+  public function httl(key:String, field:String, ...arguments:String):Array<Int> {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    param.push('FIELDS');
+    param.push(Std.string(1 + arguments.length));
+    param.push(field);
+    for (arg in arguments) {
+      param.push(arg);
+    }
+    // return command result
+    return cast this.command('HTTL', param);
   }
 
   /**
