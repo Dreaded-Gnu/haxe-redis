@@ -56,6 +56,7 @@ Currently supported commands
 * HSETNX
 * HSTRLEN
 * HTTL
+* HVALS
 * PING
 * SELECT
 * SET / SETEX

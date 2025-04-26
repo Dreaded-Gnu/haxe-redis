@@ -756,7 +756,7 @@ class Redis {
    * @param key
    * @param field
    * @param ...arguments
-   * @return Array<Int>
+   * @return Array with ttls
    */
   public function httl(key:String, field:String, ...arguments:String):Array<Int> {
     // setup param array
@@ -771,6 +771,15 @@ class Redis {
     }
     // return command result
     return cast this.command('HTTL', param);
+  }
+
+  /**
+   * HVALS
+   * @param key hashmap key
+   * @return Array with values of hashmap
+   */
+  public function hvals(key:String):Array<String> {
+    return cast this.command('HVALS', [key,]);
   }
 
   /**
