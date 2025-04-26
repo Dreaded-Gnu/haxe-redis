@@ -20,6 +20,8 @@ class Sample {
     // fetch set keys
     trace(redis.get("key2")); // outputs: "value2"
     trace(redis.get("key1")); // outputs: "value1"
+    // issue a custom command
+    trace(redis.command("GET", ["key1",])); // outputs: "value1"
   }
 }
 ```
