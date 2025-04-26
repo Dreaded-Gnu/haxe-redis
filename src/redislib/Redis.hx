@@ -203,7 +203,7 @@ class Redis {
    * @param args
    * @return Any
    */
-  private function command(cmd:String, ?args:Array<String>):Any {
+  public function command(cmd:String, ?args:Array<String>):Any {
     // acquire mutex
     #if (target.threaded)
     this.socketMutex.acquire();
@@ -728,6 +728,27 @@ class Redis {
     }
     // return command result casted to int
     return cast(this.command('HSET', param), Int);
+  }
+
+  /**
+   * HSETNX
+   * @param key Hashmap key
+   * @param field Field to set value
+   * @param value Value to set
+   * @return 1 if set, 0 if already set
+   */
+  public function hsetnx(key:String, field:String, value:String):Int {
+    return cast(this.command('HSETNX', [key, field, value,]), Int);
+  }
+
+  /**
+   * HSTRLEN
+   * @param key Hashmap key
+   * @param field Field to get length of
+   * @return Length of the field
+   */
+  public function hstrlen(key:String, field:String):Int {
+    return cast(this.command('HSTRLEN', [key, field,]), Int);
   }
 
   /**

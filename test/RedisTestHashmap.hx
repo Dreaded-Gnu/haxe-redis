@@ -368,4 +368,17 @@ class RedisTestHashmap extends utest.Test {
     Assert.equals(-1, a[2]);
     Assert.equals(-2, a[3]);
   }
+
+  public function testHsetnx():Void {
+    Assert.equals(3, this.redis.hset("myhash", "field1", "Hello", "field2", "World", "field3", "Bar"));
+    Assert.equals(0, this.redis.hsetnx("myhash", "field1", "foo"));
+    Assert.equals(3, this.redis.hlen("myhash"));
+    Assert.equals(1, this.redis.hsetnx("myhash", "field4", "foobar"));
+    Assert.equals(4, this.redis.hlen("myhash"));
+  }
+
+  public function testHstrlen():Void {
+    Assert.equals(3, this.redis.hset("myhash", "field1", "Hello", "field2", "World", "field3", "Bar"));
+    Assert.equals(5, this.redis.hstrlen("myhash", "field1"));
+  }
 }

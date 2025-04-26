@@ -51,11 +51,15 @@ Currently supported commands
 * HPEXPIRETIME
 * HPTTL
 * HSET
+* HSETNX
+* HSTRLEN
 * HTTL
 * PING
 * SELECT
 * SET / SETEX
 * STRLEN
+
+Issue a not supported command requires to call public function `command` with the specific command and parameters.
 
 ## installation
 
