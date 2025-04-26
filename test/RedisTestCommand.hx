@@ -27,6 +27,6 @@ class RedisTestCommand extends utest.Test {
    */
   public function testCustomCommand():Void {
     Assert.isTrue(this.redis.set("foo", "bar"));
-    Assert.equals("bar", this.redis.command("GET",["foo",]));
+    Assert.equals("bar", this.redis.command("GET", ["foo",]));
   }
 }
