@@ -1,7 +1,7 @@
 package test;
 
 import utest.Assert;
-import redis.Redis;
+import redislib.Redis;
 
 class RedisTestPing extends utest.Test {
   private var redis:Redis;

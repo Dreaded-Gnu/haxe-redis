@@ -1,4 +1,4 @@
 #!/bin/sh
-rm -f haxe-redis.zip
-zip -r haxe-redis.zip src README.md CHANGELOG.md LICENSE.md haxelib.json
-haxelib submit haxe-redis.zip
+rm -f redislib.zip
+zip -r redislib.zip src README.md CHANGELOG.md LICENSE.md haxelib.json
+haxelib submit redislib.zip

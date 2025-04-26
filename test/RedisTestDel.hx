@@ -1,8 +1,7 @@
 package test;
 
-import haxe.Timer;
 import utest.Assert;
-import redis.Redis;
+import redislib.Redis;
 
 class RedisTestDel extends utest.Test {
   private var redis:Redis;

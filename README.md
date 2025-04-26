@@ -1,11 +1,11 @@
-# haxe-redis
+# redislib
 
 Haxe redis implementation
 
 ## example
 
 ```haxe
-import redis.Redis;
+import redislib.Redis;
 
 class Sample {
   /**
@@ -59,8 +59,14 @@ Currently supported commands
 
 ## installation
 
-haxe-redis is currently not published to haxelib, so to install you've to use git install.
+Using redislib source install.
 
 ```bash
-haxelib git haxe-redis https://github.com/Dreaded-Gnu/haxe-redis
+haxelib git redislib https://github.com/Dreaded-Gnu/haxe-redis
+```
+
+Using redislib normal install
+
+```bash
+haxelib install redislib
 ```
