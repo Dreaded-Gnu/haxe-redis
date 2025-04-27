@@ -293,11 +293,7 @@ class RedisTestHashmap extends utest.Test {
    */
   @:timeout(5000)
   public function testHpexpireat(async:utest.Async):Void {
-    #if !eval
     var timestamp:Float = Date.now().getTime() + 2000;
-    #else
-    var timestamp:Float = Timer.stamp() * 1000 + 2000;
-    #end
     Assert.equals(3, this.redis.hset('myhash', 'field1', 'Hello', 'field2', 'World', 'field3', 'Bar'));
     var a:Array<Int> = this.redis.hpexpireat('myhash', timestamp, '', 'field1', 'field2');
     Assert.equals(2, a.length);
@@ -397,11 +393,7 @@ class RedisTestHashmap extends utest.Test {
   }
 
   public function testHsetex():Void {
-    #if !eval
     var timestamp:Float = Date.now().getTime() + 10000;
-    #else
-    var timestamp:Float = Timer.stamp() * 1000 + 10000;
-    #end
     Assert.equals(1, this.redis.hsetex('myhash', '', timestamp, 'PXAT', 'field1', 'Hello', 'field2', 'World'));
     var expire:Array<Float> = this.redis.hpexpiretime('myhash', 'field1', 'field2');
     Assert.equals(2, expire.length);

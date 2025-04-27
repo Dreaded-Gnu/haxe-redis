@@ -467,7 +467,7 @@ class Redis {
     param.push(key);
     if (option == 'EX' || option == 'PX' || option == 'EXAT' || option == 'PXAT') {
       param.push(option);
-      param.push(Std.string(Math.ffloor(expire)));
+      param.push(Helper.floatToString(Math.ffloor(expire)));
     } else if (option == 'PERSIST') {
       param.push(option);
     }
@@ -617,7 +617,7 @@ class Redis {
     var param:Array<String> = new Array<String>();
     // push params
     param.push(key);
-    param.push(Std.string(Math.ffloor(expire)));
+    param.push(Helper.floatToString(Math.ffloor(expire)));
     if (option == 'NX' || option == 'XX' || option == 'GT' || option == 'LT') {
       param.push(option);
     }
@@ -645,7 +645,7 @@ class Redis {
     var param:Array<String> = new Array<String>();
     // push params
     param.push(key);
-    param.push(Std.string(Math.ffloor(unixTimeMilliseconds)));
+    param.push(Helper.floatToString(Math.ffloor(unixTimeMilliseconds)));
     if (option == 'NX' || option == 'XX' || option == 'GT' || option == 'LT') {
       param.push(option);
     }
@@ -815,7 +815,7 @@ class Redis {
     }
     if (expireOption == 'EX' || expireOption == 'PX' || expireOption == 'EXAT' || expireOption == 'PXAT') {
       param.push(expireOption);
-      param.push(Std.string(Math.ffloor(expire)));
+      param.push(Helper.floatToString(Math.ffloor(expire)));
     } else if (expireOption == 'KEEPTTL') {
       param.push(expireOption);
     }
