@@ -390,4 +390,13 @@ class RedisTestHashmap extends utest.Test {
     Assert.equals("World", values[1]);
     Assert.equals("Bar", values[2]);
   }
+
+  public function testHsetex():Void {
+    var timestamp:Float = Timer.stamp() * 1000 + 10000;
+    Assert.equals(1, this.redis.hsetex('myhash', '', timestamp, 'PXAT', 'field1', 'Hello', 'field2', 'World'));
+    var expire:Array<Float> = this.redis.hpexpiretime('myhash', 'field1', 'field2');
+    Assert.equals(2, expire.length);
+    Assert.equals(Math.ffloor(timestamp), expire[0]);
+    Assert.equals(Math.ffloor(timestamp), expire[1]);
+  }
 }

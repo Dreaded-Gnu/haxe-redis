@@ -53,6 +53,7 @@ Currently supported commands
 * HPEXPIRETIME
 * HPTTL
 * HSET
+* HSETEX
 * HSETNX
 * HSTRLEN
 * HTTL

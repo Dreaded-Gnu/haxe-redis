@@ -190,7 +190,7 @@ class Redis {
 
       // error
       case "-".code:
-        throw new Error(line.substr(1));
+        throw new Error(line.substr(0));
 
       default:
         throw new Error('-ERR Unknown redis response!');
@@ -728,6 +728,53 @@ class Redis {
     }
     // return command result casted to int
     return cast(this.command('HSET', param), Int);
+  }
+
+  /**
+   * HSETEX
+   * @param key Hashmap key
+   * @param option FNX or FXX or empty string
+   * @param expire expire in seconds, milliseconds, unix time seconds or unix time milliseconds
+   * @param expireOption EX, PX, EXAT, PXAT or KEEPTTL
+   * @param field field to set
+   * @param value value to set
+   * @param ...arguments Further field value pairs to set expire
+   * @return 0 for no fields are set, 1 for all fields are reset
+   */
+  public function hsetex(key:String, option:String, expire:Float, expireOption:String, field:String, value:String, ...arguments:String):Int {
+    // handle invalid argument length
+    if (arguments.length > 0 && arguments.length % 2 != 0) {
+      throw new Error('-ERR Invalid amount of arguments passed!');
+    }
+    // validate option
+    if ('FNX' != option && 'FXX' != option && '' != option) {
+      throw new Error('-ERR Invalid amount of arguments passed!');
+    }
+    // validate expire option
+    if ('' == expireOption || (['EX', 'PX', 'EXAT', 'PXAT', 'KEEPTTL'].indexOf(expireOption) == -1)) {
+      throw new Error('-ERR Invalid amount of arguments passed!');
+    }
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    if ('' != option) {
+      param.push(option);
+    }
+    if (expireOption == 'EX' || expireOption == 'PX' || expireOption == 'EXAT' || expireOption == 'PXAT') {
+      param.push(expireOption);
+      param.push(Std.string(Math.ffloor(expire)));
+    } else if (expireOption == 'KEEPTTL') {
+      param.push(expireOption);
+    }
+    param.push('FIELDS');
+    param.push(Std.string(1 + arguments.length / 2));
+    param.push(field);
+    param.push(value);
+    for (arg in arguments) {
+      param.push(arg);
+    }
+    return cast(this.command('HSETEX', param), Int);
   }
 
   /**
