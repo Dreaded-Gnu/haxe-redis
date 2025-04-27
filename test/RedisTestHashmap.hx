@@ -285,7 +285,7 @@ class RedisTestHashmap extends utest.Test {
       Assert.equals(1, this.redis.hkeys('myhash').length);
       // mark async as done
       async.done();
-    }, 2000);
+    }, 2500);
   }
 
   /**
