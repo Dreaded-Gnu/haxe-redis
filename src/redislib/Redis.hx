@@ -157,15 +157,15 @@ class Redis {
     // handle read line
     switch (line.charCodeAt(0)) {
       // string
-      case "+".code:
+      case '+'.code:
         return line.substr(1);
 
       // int
-      case ":".code:
+      case ':'.code:
         return Std.parseFloat(line.substr(1));
 
       // bulk
-      case "$".code:
+      case '$'.code:
         var l:Int = Std.parseInt(line.substr(1));
         if (l == -1) {
           return null;
@@ -178,7 +178,7 @@ class Redis {
         return r;
 
       // multi
-      case "*".code:
+      case '*'.code:
         var l:Int = Std.parseInt(line.substr(1));
         if (l == -1) {
           return null;
@@ -190,7 +190,7 @@ class Redis {
         return a;
 
       // error
-      case "-".code:
+      case '-'.code:
         throw new Error('${line.substr(0)}. Parameters: ${args?.join(',')}');
 
       default:
@@ -723,11 +723,11 @@ class Redis {
       param.push(match);
     }
     if (count != null) {
-      param.push("COUNT");
+      param.push('COUNT');
       param.push(Std.string(count));
     }
     if (novalues) {
-      param.push("NOVALUES");
+      param.push('NOVALUES');
     }
     return cast this.command('HSCAN', param);
   }

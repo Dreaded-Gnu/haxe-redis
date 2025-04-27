@@ -10,7 +10,7 @@ class RedisTestStrlen extends utest.Test {
    * Setup test
    */
   public function setup():Void {
-    this.redis = new Redis("localhost", 6379, "eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81", 0);
+    this.redis = new Redis('localhost', 6379, 'eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81', 0);
     this.redis.connect();
     this.redis.flushdb();
   }
@@ -26,7 +26,7 @@ class RedisTestStrlen extends utest.Test {
    * Test strlen
    */
   public function testStrlen():Void {
-    Assert.isTrue(this.redis.set("foo", "bar"));
-    Assert.equals(3, this.redis.strlen("foo"));
+    Assert.isTrue(this.redis.set('foo', 'bar'));
+    Assert.equals(3, this.redis.strlen('foo'));
   }
 }

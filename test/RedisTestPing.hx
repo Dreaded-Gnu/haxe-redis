@@ -10,7 +10,7 @@ class RedisTestPing extends utest.Test {
    * Setup test
    */
   public function setup():Void {
-    this.redis = new Redis("localhost", 6379, "eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81", 0);
+    this.redis = new Redis('localhost', 6379, 'eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81', 0);
     this.redis.connect();
     this.redis.flushdb();
   }
