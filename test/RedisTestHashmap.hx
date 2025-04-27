@@ -421,4 +421,25 @@ class RedisTestHashmap extends utest.Test {
     Assert.equals('field2', fieldValuePairs[2]);
     Assert.equals('World', fieldValuePairs[3]);
   }
+
+  public function testHrandfield():Void {
+    Assert.equals(3, this.redis.hset('myhash', 'field1', 'Hello', 'field2', 'World', 'asdf', 'Bar'));
+    var fieldMap:Map<String, String> = ['field1' => 'Hello', 'field2' => 'World', 'asdf' => 'Bar',];
+    var randomSingleField:String = this.redis.hrandfield('myhash');
+    Assert.notEquals(null, fieldMap[randomSingleField]);
+    var randomMultipleField:Array<String> = this.redis.hrandfield('myhash', 2);
+    Assert.equals(2, randomMultipleField.length);
+    for (field in randomMultipleField) {
+      Assert.notEquals(null, fieldMap[field]);
+    }
+    var randomMultipleWithValue:Array<String> = this.redis.hrandfield('myhash', 2, true);
+    Assert.equals(4, randomMultipleWithValue.length);
+    var max:Int = randomMultipleWithValue.length;
+    var i:Int = 0;
+    while (i < max) {
+      Assert.notEquals(null, fieldMap[randomMultipleWithValue[i]]);
+      Assert.equals(fieldMap[randomMultipleWithValue[i]], randomMultipleWithValue[i+1]);
+      i += 2;
+    }
+  }
 }

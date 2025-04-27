@@ -5,6 +5,7 @@
 * Implemented HVALS
 * Implemented HSETEX
 * Implemented HSCAN
+* Implemented HRANDFIELD
 
 ## 0.1.0
 

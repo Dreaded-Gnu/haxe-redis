@@ -704,6 +704,28 @@ class Redis {
   }
 
   /**
+   * HRANDFIELD
+   * @param key hashmap key
+   * @param count optional count
+   * @param withvalues flag to return with values
+   * @return String with random field or array of fields
+   */
+  public function hrandfield(key:String, count:Null<Int> = null, withvalues:Bool = false):Any {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    if (count != null) {
+      param.push(Std.string(count));
+    }
+    if (withvalues) {
+      param.push('WITHVALUES');
+    }
+    // return command result
+    return this.command('HRANDFIELD', param);
+  }
+
+  /**
    * HSCAN
    * @param key hashmap key
    * @param cursor cursor
