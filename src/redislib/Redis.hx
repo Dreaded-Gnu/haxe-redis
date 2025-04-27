@@ -137,9 +137,10 @@ class Redis {
 
   /**
    * Receive helper
+   * @params args
    * @return Any
    */
-  private function receive():Any {
+  private function receive(?args:Array<String>):Any {
     // handle not connected
     if (null == this.sock) {
       throw new Error('-ERR Not connected!');
@@ -184,13 +185,13 @@ class Redis {
         }
         var a:Array<Any> = new Array<Any>();
         for (i in 0...l) {
-          a.push(receive());
+          a.push(receive(args));
         }
         return a;
 
       // error
       case "-".code:
-        throw new Error(line.substr(0));
+        throw new Error('${line.substr(0)}. Parameters: ${args?.join(',')}');
 
       default:
         throw new Error('-ERR Unknown redis response!');
@@ -211,7 +212,7 @@ class Redis {
     // send command
     this.send(cmd, args);
     // receive response
-    var response:Any = this.receive();
+    var response:Any = this.receive(args);
     // release mutex
     #if (target.threaded)
     this.socketMutex.release();
@@ -700,6 +701,35 @@ class Redis {
     }
     // return command result
     return cast this.command('HPTTL', param);
+  }
+
+  /**
+   * HSCAN
+   * @param key hashmap key
+   * @param cursor cursor
+   * @param match match pattern
+   * @param count count count option
+   * @param novalues flag to indicate whether novalues shall be passed
+   * @return Array key value pairs, first key is the count, ongoing value is a key value array
+   */
+  public function hscan(key:String, cursor:Int, match:Null<String> = null, count:Null<Int> = null, novalues:Bool = false):Array<Any> {
+    // setup param array
+    var param:Array<String> = new Array<String>();
+    // push params
+    param.push(key);
+    param.push(Std.string(cursor));
+    if (match != null) {
+      param.push('MATCH');
+      param.push(match);
+    }
+    if (count != null) {
+      param.push("COUNT");
+      param.push(Std.string(count));
+    }
+    if (novalues) {
+      param.push("NOVALUES");
+    }
+    return cast this.command('HSCAN', param);
   }
 
   /**

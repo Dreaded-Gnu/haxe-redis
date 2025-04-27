@@ -399,4 +399,17 @@ class RedisTestHashmap extends utest.Test {
     Assert.equals(Math.ffloor(timestamp), expire[0]);
     Assert.equals(Math.ffloor(timestamp), expire[1]);
   }
+
+  public function testHscan():Void {
+    Assert.equals(3, this.redis.hset("myhash", "field1", "Hello", "field2", "World", "asdf", "Bar"));
+    var scanResult:Array<Any> = this.redis.hscan("myhash", 0, "field*");
+    Assert.equals(2, scanResult.length);
+    Assert.equals(0, Std.parseInt(scanResult[0]));
+    var fieldValuePairs:Array<String> = scanResult[1];
+    Assert.equals(4, fieldValuePairs.length);
+    Assert.equals("field1", fieldValuePairs[0]);
+    Assert.equals("Hello", fieldValuePairs[1]);
+    Assert.equals("field2", fieldValuePairs[2]);
+    Assert.equals("World", fieldValuePairs[3]);
+  }
 }

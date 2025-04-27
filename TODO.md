@@ -3,6 +3,7 @@
 ## Still to be done
 
 - [ ] Implement handling for loose of connection to redis
+- [ ] Test fail sometimes, when floats are formatted with e notation
 
 ## Already done
 

@@ -52,6 +52,7 @@ Currently supported commands
 * HPEXPIREAT
 * HPEXPIRETIME
 * HPTTL
+* HSCAN
 * HSET
 * HSETEX
 * HSETNX

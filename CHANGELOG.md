@@ -4,6 +4,7 @@
 
 * Implemented HVALS
 * Implemented HSETEX
+* Implemented HSCAN
 
 ## 0.1.0
 
